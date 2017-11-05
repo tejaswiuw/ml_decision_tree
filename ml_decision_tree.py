@@ -7,6 +7,9 @@
 import sys
 import math
 import pandas as pd
+from pprint import pprint
+import numpy as np
+
 
 class DecisionNode:
 
@@ -36,7 +39,23 @@ class DecisionNode:
 
 
 # Illustration of functionality of DecisionNode class
-def funTree():
+def funTree(train, target, attributes):
+
+    #Train Data
+    y_train = train.loc[:, target]
+    x_train = train.drop(target, axis=1) #axis = 1 means we are referring to a column and not row
+
+    x = x_train.as_matrix()
+    y = y_train.as_matrix().T
+
+    print(x)
+    print(y)
+    print (attributes)
+
+    rrr = recursiveTree(x,y,attributes)
+    #pprint(rrr)   # Print the learned decision tree
+
+
     myLeftTree = DecisionNode('humidity')
     myLeftTree.children['normal'] = DecisionNode('no')
     myLeftTree.children['high'] = DecisionNode('yes')
@@ -77,6 +96,12 @@ def information_gain(y, x):
 
 #Method is called while fitting the training data
 def recursiveTree(x, y, headers):
+
+
+    #myLeftTree = DecisionNode('humidity')
+    #myLeftTree.children['normal'] = DecisionNode('no')
+    #myLeftTree.children['high'] = DecisionNode('yes')
+
     if len(set(y)) == 1:
         return y[0]
 
@@ -108,7 +133,8 @@ def recursiveTree(x, y, headers):
 
 def id3(examples, target, attributes):
     #Creating id3
-    tree = funTree()
+    tree = funTree(examples, target, attributes)
+    # recursiveTree(examples, target, attributes)
     return tree
 
 
