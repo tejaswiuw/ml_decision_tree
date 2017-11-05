@@ -1,15 +1,11 @@
-# course: TCSS555
-# Homework 2
-# date: 10/03/2017
-# name: Martine De Cock
+# Machine Learning HomeWork 2
+# name: Tejaswi Gorrepati
 # description: Training and testing decision trees with discrete-values attributes
 
 import sys
 import math
 import pandas as pd
-from pprint import pprint
 import numpy as np
-
 
 class DecisionNode:
 
@@ -37,33 +33,7 @@ class DecisionNode:
         subtree = self.children[value]
         return subtree.predicts(x)
 
-
-# Illustration of functionality of DecisionNode class
-def funTree(train, target, attributes):
-
-    #Train Data
-    y_train = train.loc[:, target]
-    x_train = train.drop(target, axis=1) #axis = 1 means we are referring to a column and not row
-
-    x = x_train.as_matrix()
-    y = y_train.as_matrix().T
-
-    print(x)
-    print(y)
-    print (attributes)
-
-    rrr = recursiveTree(x,y,attributes)
-    #pprint(rrr)   # Print the learned decision tree
-
-
-    myLeftTree = DecisionNode('humidity')
-    myLeftTree.children['normal'] = DecisionNode('no')
-    myLeftTree.children['high'] = DecisionNode('yes')
-    myTree = DecisionNode('wind')
-    myTree.children['weak'] = myLeftTree
-    myTree.children['strong'] = DecisionNode('no')
-    return myTree
-
+#This function computes entropy
 def entropy(s):
     res = 0
     var, counts = np.unique(s, return_counts=True)
@@ -76,14 +46,12 @@ def entropy(s):
     return res
 
 
-
 def partition(a):
     #print(a)
     #for c in np.unique(a):
     #    print(c)
     #    print ((a==c).nonzero()[0])
     return {c: (a==c).nonzero()[0] for c in np.unique(a)}
-
 
 # Calculate information gain for each attribute split
 def information_gain(y, x):
@@ -94,47 +62,44 @@ def information_gain(y, x):
         res -= p * entropy(y[x == v])
     return res
 
-#Method is called while fitting the training data
-def recursiveTree(x, y, headers):
-
-
-    #myLeftTree = DecisionNode('humidity')
-    #myLeftTree.children['normal'] = DecisionNode('no')
-    #myLeftTree.children['high'] = DecisionNode('yes')
+# Recursive function to create decison tree based on the training data
+def decison_tree(x, y, headers):
 
     if len(set(y)) == 1:
-        return y[0]
+        return DecisionNode(y[0])
 
-    # We get attribute that gives the highest mutual
+    # Get the attribute that gives the highest gain
     gain = np.array([information_gain(y, x_attr) for x_attr in x.T])
     selected_attr = np.argmax(gain)   # returns index of the max gain
     #print ('Selection attribute: ' + str(selected_attr))
 
-    # If there's no gain at all, nothing has to be done, just return the original set
+    # If there's no gain at all, nothing has to be done, just return the node
     if np.all(gain < 1e-100):
-        #print("@@@@@@@@@This Leaf Node does not give unique result@@@@@@@@@@")
-        # Tree could no further split data and has no unique class at leaf
-        return y
+        return DecisionNode(y[0])
 
     # Splitting using selected attribute
-    print (x[:, selected_attr])
     sets = partition(x[:, selected_attr])
+    #print (x[:, selected_attr])
     #print ('sets: ' + str(sets))
-    res = {}
+
+    node = DecisionNode(headers[selected_attr])
     for k, v in sets.items():
         y_subset = y.take(v, axis=0)
         x_subset = x.take(v, axis=0)
-        # print (x_subset)
-        res["%s = %s" % (headers[selected_attr], k)] = recursiveTree(x_subset, y_subset, headers)
+        node.children[k] = decison_tree(x_subset, y_subset, headers)
 
-    return res
-
-
+    return node
 
 def id3(examples, target, attributes):
-    #Creating id3
-    tree = funTree(examples, target, attributes)
-    # recursiveTree(examples, target, attributes)
+
+    # Preparing data for creating decision tree
+    y_train = examples.loc[:, target]
+    x_train = examples.drop(target, axis=1)
+    x = x_train.as_matrix()
+    y = y_train.as_matrix().T
+
+    # Create decison tree
+    tree = decison_tree(x,y,attributes)
     return tree
 
 
