@@ -37,8 +37,6 @@ class DecisionNode:
 
 # Illustration of functionality of DecisionNode class
 def funTree():
-
-
     myLeftTree = DecisionNode('humidity')
     myLeftTree.children['normal'] = DecisionNode('no')
     myLeftTree.children['high'] = DecisionNode('yes')
@@ -109,6 +107,7 @@ def recursiveTree(x, y, headers):
 
 
 def id3(examples, target, attributes):
+    #Creating id3
     tree = funTree()
     return tree
 
