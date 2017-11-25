@@ -2,7 +2,11 @@
 Decision tree implementation in python
 
 Running the code for PlayTennis DataSet
-```python ml_decision_tree.py playtennis_train.csv playtennis_test.csv playtennis```
+```python
+python ml_decision_tree.py playtennis_train.csv playtennis_test.csv playtennis
+```
 
 Running the code for Republican DataSet
-```python ml_decision_tree.py playtennis_train.csv playtennis_test.csv republican```
+```python
+python ml_decision_tree.py playtennis_train.csv playtennis_test.csv republican
+```
